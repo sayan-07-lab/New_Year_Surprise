@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           CSS STYLING
+           ========================================= */
+        :root {
+            --primary-color: #ff4d6d; /* Pink/Red for romance */
+            --bg-color: #121212;      /* Dark Background */
+            --text-color: #ffffff;
+            --accent-gold: #ffd700;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* UTILITY CLASSES */
+        .hidden { display: none !important; }
+        .flex-center { display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .section { padding: 50px 20px; min-height: 80vh; text-align: center; }
+        
+        /* 1. MUSIC PLAYER CONTROLS (Top Right) */
+        #music-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+
+        /* 2. LANDING PAGE & PARTICLES */
+        #landing-page {
+            height: 100vh;
+            background: radial-gradient(circle, #2b1016 0%, #000000 100%);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Particle Animation (Stars/Snow) */
+        .particle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: float 5s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+
+        .login-box {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid var(--primary-color);
+            z-index: 20;
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            margin-top: 10px;
+            width: 80%;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: scale(1.05); }
+
+        /* 3. WISHES SECTION */
+        #wishes {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+        
+        .toast-container {
+            font-size: 4rem;
+            margin-top: 30px;
+            opacity: 0; 
+            transition: opacity 1s, transform 1s;
+        }
+        
+        .animate-toast {
+            opacity: 1;
+            transform: scale(1.2) rotate(-10deg);
+        }
+
+        .reasons-list {
+            list-style: none;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+        .reasons-list li {
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 3px solid var(--primary-color);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* 4. GAMES SECTION */
+        .game-card {
+            background: #1f1f1f;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+            position: relative; /* Needed for button containment if we wanted it contained, but we'll use fixed for chaos */
+        }
+
+        /* Quiz Styles */
+        .quiz-option {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #555;
+            cursor: pointer;
+        }
+        .quiz-option.correct { background: green; }
+        .quiz-option.wrong { background: red; }
+        
+        /* Hidden Photo Reward */
+        .reward-img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+            border: 3px solid white;
+        }
+
+        /* Scratch Card */
+        #scratch-container {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            margin: 0 auto;
+            background: white; /* The hidden message background */
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            overflow: hidden;
+            user-select: none;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: grab;
+        }
+
+        /* --- UPDATED: Runaway Button Styles --- */
+        .runaway {
+            transition: 0.2s ease; /* Makes the movement slightly smoother */
+            position: relative; /* Default position */
+        }
+        
+        /* When moving, we will force it to fixed via JS, but z-index ensures it floats above everything */
+        .moving-btn {
+            z-index: 9999; 
+            background-color: #555 !important; /* Make it look grayed out/tricky */
+        }
+
+
+        /* 5. MEMORY WALL (TIMELINE) */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .polaroid {
+            background: white;
+            color: black;
+            padding: 15px 15px 40px 15px;
+            width: 250px;
+            margin: 0 auto;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transform: rotate(-5deg);
+            transition: transform 0.3s;
+            position: relative;
+        }
+        
+        .polaroid:nth-child(even) { transform: rotate(5deg); }
+        .polaroid:hover { transform: scale(1.2) rotate(0deg); z-index: 50; }
+        
+        .polaroid img { width: 100%; height: auto; filter: grayscale(20%); transition: filter 0.3s;}
+        .polaroid:hover img { filter: grayscale(0%); }
+        
+        .caption {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .polaroid .bts {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .polaroid:hover .bts { opacity: 1; }
+
+        /* 6. SPECIAL AUDIO SECTION */
+        #audio-surprise {
+            background: linear-gradient(45deg, #ff4d6d, #ff9a9e);
+            color: white;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="background.mp3" type="audio/mpeg"> 
+    </audio>
+
+    <div id="music-controls" onclick="toggleMusic()">
+        🎵 Music: <span id="music-status">OFF</span>
+    </div>
+
+    <div id="landing-page" class="flex-center">
+        <div id="particles-container"></div>
+
+        <div class="login-box">
+            <h1>🔒 Security Check</h1>
+            <p>How many times have we f*ed eachother?</p>
+            <input type="text" id="security-answer" placeholder="Type answer here...">
+            <button onclick="checkAnswer()">Unlock 2026 Surprise</button>
+            <p id="error-msg" style="color:red; display:none;">3rd barer ta niye!! Try again.</p>
+        </div>
+    </div>
+
+    <div id="main-content" class="hidden">
+
+        <div id="wishes" class="section flex-center">
+            <h2 style="color: var(--primary-color);">To My Favorite Person</h2>
+            <p id="typewriter-text" style="max-width: 600px; min-height: 100px;"></p>
+
+            <h3>Why 2025 was special with you:</h3>
+            <ul class="reasons-list">
+                <li>This year I realised what it feels losing you.(It's really bad!!😣)</li>
+                <li>We have, specially I have fallen in love with you more!!!😌</li>
+                <li>We have done something like never before!!!!🫣 December was really fun with you my baby.💝</li>
+            </ul>
+
+            <div class="toast-container" id="toast-anim">
+                🥂 <br><span style="font-size: 1.5rem; font-family: 'Poppins';">Cheers to Us!</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 style="border-bottom: 2px solid var(--primary-color); display:inline-block;">Fun & Games</h2>
+
+            <div class="game-card">
+                <h3>❓ The Friendship Quiz</h3>
+                <p>Get it right to see a photo!</p>
+                <div id="quiz-container"></div>
+            </div>
+
+            <div class="game-card">
+                <h3>😈 The Truth Quiz</h3>
+                
+                <div style="margin-bottom: 30px;">
+                    <p><strong>1. Who gives all efforts to make this relationship strong?</strong></p>
+                    <button class="runaway">Dipanwita</button> 
+                    <button onclick="alert('Correct! Obviously me! 😎')">Sayan</button>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <p><strong>2. Who is dumber?</strong></p>
+                    <button onclick="alert('I knew you would admit it! 😂')">Dipanwita</button>
+                    <button class="runaway">Sayan</button>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <h3>✨ Scratch for a secret</h3>
+                <div id="scratch-container">
+                    <span id="secret-msg">I Love You! So, I have noting to hide</span>
+                    <canvas id="scratch-canvas" width="300" height="150"></canvas>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <h3>🥠 Fortune Cookie 2026.. know the future prediction!</h3>
+                <button onclick="openFortune()">Crack Cookie</button>
+                <p id="fortune-result" style="font-style: italic; margin-top: 10px; color: var(--accent-gold);"></p>
+            </div>
+        </div>
+
+        <div id="memory-lane" class="section">
+            <h2>📸 Some Couple Pics</h2>
+            <div class="timeline">
+                
+                <div class="polaroid">
+                    <div class="bts">LOJJABOTI LOTIKA!</div>
+                    <img src="image1.jpg" alt=".">
+                    <div class="caption">RABINDRA SAROBAR</div>
+                </div>
+
+                <div class="polaroid">
+                    <div class="bts">Cutie!</div>
+                    <img src="image2.jpg" alt="..">
+                    <div class="caption">NANDAN</div>
+                </div>
+
+                <div class="polaroid">
+                    <div class="bts">Ami valoi kheli bol!</div>
+                    <img src="image3.jpg" alt="...">
+                    <div class="caption">MAIDAN</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="audio-surprise" class="section flex-center">
+            <h2>🎙️ One Last Thing...</h2>
+            <p>The music has stopped. Listen to this.</p>
+            <p><i>"This is my most favorite audio"</i></p>
+            
+            <button onclick="playSpecialAudio()" style="background: white; color: var(--primary-color); padding: 15px 30px; font-size: 1.2rem;">
+                ▶ Play Voice Note
+            </button>
+
+            <audio id="special-audio">
+                <source src="audio.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <div style="padding: 20px; text-align: center; font-size: 0.8rem; opacity: 0.5;">
+            Made with ❤️ for you. Happy 2026!
+        </div>
+
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const SECURITY_ANSWER = "9"; 
+        const LOVE_LETTER = "Happy New Year, my Love, my Queen! 2025 was a rollercoaster, but getting you back and holding your hand made every drop thrilling. Here is to another year of us being weird together...";
+
+        // --- 1. LANDING PAGE ---
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            for(let i=0; i<30; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                p.style.width = p.style.height = (Math.random() * 5 + 2) + 'px';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        function checkAnswer() {
+            const input = document.getElementById('security-answer').value.toLowerCase().trim();
+            const music = document.getElementById('bg-music');
+            
+            if (input === SECURITY_ANSWER) {
+                document.getElementById('landing-page').style.display = 'none';
+                document.getElementById('main-content').classList.remove('hidden');
+                
+                music.volume = 0.5;
+                music.play().catch(e => console.log("Audio play failed interaction required"));
+                document.getElementById('music-status').innerText = "ON";
+                
+                typeWriter();
+                // Initialize the runaway buttons after content is loaded
+                initRunawayButtons();
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById('bg-music');
+            const status = document.getElementById('music-status');
+            if (music.paused) {
+                music.play();
+                status.innerText = "ON";
+            } else {
+                music.pause();
+                status.innerText = "PAUSED";
+            }
+        }
+
+        // --- 2. TYPEWRITER ---
+        let i = 0;
+        function typeWriter() {
+            if (i < LOVE_LETTER.length) {
+                document.getElementById("typewriter-text").innerHTML += LOVE_LETTER.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            const toast = document.getElementById('toast-anim');
+            const position = toast.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight / 1.3;
+            if(position < screenPosition) {
+                toast.classList.add('animate-toast');
+            }
+        });
+
+        // --- 3. FRIENDSHIP QUIZ ---
+        const quizData = [
+            {
+                q: "What is my favorite food?",
+                options: ["Fuchka", "You", "Momos"],
+                ans: 0, 
+                img: "image4.jpg"
+            },
+            {
+                q: "What is the most beautiful to me?",
+                options: ["Nature", "Diamond", "You"],
+                ans: 2,
+                img: "image5.jpg"
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        quizData.forEach((item, index) => {
+            let html = `<div style="margin-bottom: 20px; border-bottom:1px solid #444; padding-bottom:10px;">
+                <p><strong>Q${index+1}: ${item.q}</strong></p>
+                <div id="opts-${index}">`;
+            item.options.forEach((opt, optIndex) => {
+                html += `<button class="quiz-option" onclick="checkQuiz(${index}, ${optIndex}, this)">${opt}</button>`;
+            });
+            html += `</div>
+                <img id="reward-${index}" src="${item.img}" class="reward-img">
+            </div>`;
+            quizContainer.innerHTML += html;
+        });
+
+        function checkQuiz(qIndex, optIndex, btnElement) {
+            const correctIndex = quizData[qIndex].ans;
+            if (optIndex === correctIndex) {
+                btnElement.classList.add('correct');
+                document.getElementById(`reward-${qIndex}`).style.display = 'block';
+            } else {
+                btnElement.classList.add('wrong');
+            }
+        }
+
+        // --- 4. RUNAWAY BUTTON LOGIC (THE TRUTH QUIZ) ---
+        function initRunawayButtons() {
+            const runaways = document.querySelectorAll('.runaway');
+            
+            runaways.forEach(btn => {
+                btn.addEventListener('mouseover', () => {
+                    moveButton(btn);
+                });
+                // Also add touchstart for mobile users so it jumps when they try to tap
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault(); // prevents click
+                    moveButton(btn);
+                });
+            });
+        }
+
+        function moveButton(btn) {
+            // Get window dimensions
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            // Calculate random position (staying within 10% to 90% of screen to avoid going off-edge)
+            const newX = Math.random() * (w - 100); 
+            const newY = Math.random() * (h - 50); 
+            
+            // Apply fixed position to make it float anywhere on screen
+            btn.style.position = 'fixed';
+            btn.style.left = newX + 'px';
+            btn.style.top = newY + 'px';
+            btn.classList.add('moving-btn');
+        }
+
+        // --- 5. SCRATCH CARD ---
+        const canvas = document.getElementById('scratch-canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#C0C0C0'; 
+        ctx.fillRect(0, 0, 300, 150);
+        ctx.fillStyle = '#000';
+        ctx.font = "20px Arial";
+        ctx.fillText("Scratch Here!", 90, 80);
+
+        let isDrawing = false;
+        function getMousePos(canvas, evt) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (evt.clientX || evt.touches[0].clientX) - rect.left,
+                y: (evt.clientY || evt.touches[0].clientY) - rect.top
+            };
+        }
+        function scratch(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const pos = getMousePos(canvas, e);
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 15, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mousemove', scratch);
+        canvas.addEventListener('touchstart', () => isDrawing = true);
+        canvas.addEventListener('touchend', () => isDrawing = false);
+        canvas.addEventListener('touchmove', scratch);
+
+        // --- 6. FORTUNE COOKIE ---
+        const fortunes = [
+            "We will travel to a new country this year.",
+            "You will get that goal you've been working on!",
+            "I will cook you dinner more often (maybe).",
+            "We will adopt a cat/dog!"
+        ];
+        function openFortune() {
+            const random = Math.floor(Math.random() * fortunes.length);
+            document.getElementById('fortune-result').innerText = fortunes[random];
+        }
+
+        // --- 7. AUDIO ---
+        function playSpecialAudio() {
+            const bgMusic = document.getElementById('bg-music');
+            const specialAudio = document.getElementById('special-audio');
+            bgMusic.pause();
+            specialAudio.play();
+            specialAudio.onended = function() {
+                bgMusic.play();
+            };
+        }
+    </script>
+</body>
+</html>
